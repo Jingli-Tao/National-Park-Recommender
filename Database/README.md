@@ -1,4 +1,4 @@
-Features, File Name
+Features, File Name \
 num of visitors, visitation_extraction_2008-2018.csv
 num of motels, WIP
 num of hotels, WIP
