@@ -10,4 +10,4 @@ park entrance/pass fee, entrance_fee_pass.tsv \
 flight cost, optional \
 average days of stay, visitation_extraction_2008-2018.csv \
 park activity list, activity.tsv \
-park area, area.tsv \
+park area, area.tsv
