@@ -1,47 +1,63 @@
+let npd;
 (async () => {
-    const stateTopo = await d3.json('data/states-10m.json');
-    buildMap(stateTopo, d3.select('#map'));
+    const [stateTopo, postalCodes, parkData] = await Promise.all([
+        d3.json('data/states-10m.json'),
+        d3.csv('data/state_codes.csv'),
+        d3.csv('http://localhost:8080/datafiles?filename=park_data.csv')
+    ]);
+    console.table(postalCodes);
+    const postalCodesSet = new Set(postalCodes.map(pc => pc.postal_code));
+    npd = parkData
+        .filter(row => {
+            const isNatPark = row.designation === 'National Park'
+            const isValidStates = row.states.split(',').some(state => postalCodesSet.has(state));
+            const hasLatLong = row.latLong.length > 0;
+            return isNatPark && isValidStates && hasLatLong;
+        })
+        .map(row => {
+            console.log(row);
+            const { lat, long } = getLatLong(row);
+            return {
+                ...row,
+                lat,
+                long
+            };
+        })
+
+    console.table(npd);
+    buildMap(stateTopo, d3.select('#map'), npd);
 })().catch(console.error);
 
-function buildMap(topo, svg) {
-    const width = +svg.attr('width') - 240;
-    const height = +svg.attr('height');
+function getLatLong(row) {
+    const [latStr, longStr] = row.latLong.split(', ');
+    const [, lat] = latStr.split(':');
+    const [, long] = longStr.split(':');
+    return { lat, long };
+}
 
-    // const tip = d3.tip()
-    //     .attr('class', 'd3-tip')
-    //     .direction('e')
-    //     .offset([0, 5])
-    //     .html(d => {
-    //         return `<p>Tip Here</p>`
-    //     });
-    // svg.call(tip);
+function buildMap(topo, svg, npd) {
+    const defaultScale = d3.geoAlbersUsa().scale();
+    const projection = d3.geoAlbersUsa().translate([480, 300]).scale(defaultScale * 600 / 500);
 
-    const path = d3.geoPath()
-        .projection(d3.geoAlbersUsa().scale(1300).translate([487.5, 305]));
-
-    // const x = d3.scaleLog()
-    //     .domain([1, highestQuake])
-    //     .range([1, 100]);
-
-    const color = d3.scaleQuantize()
-        .domain([1,100])
-        .range(d3.schemeReds[9]);
-
-    svg.append('g')
-        .attr('class', 'states')
+    const path = d3.geoPath().projection(projection);
+    svg.append("g")
         .selectAll('path')
         .data(topojson.feature(topo, topo.objects.states).features)
-        .enter().append('path')
-        .attr('fill', function (d) {
-            return "#70a360";
-            return color(x(earthquakes.get(d.properties.name) || 1));
-        })
-        .attr('class', 'state')
-        .attr('d', path)
+        .enter()
+        .append('path')
+        .attr('fill', '#70a360')
+        .attr('d', path);
+
+    svg.selectAll('circle')
+        .data(npd)
+        .enter()
+        .append('circle')
+        .attr('cx', d =>  projection([parseFloat(d.long), parseFloat(d.lat)])[0])
+        .attr('cy', d =>  projection([parseFloat(d.long), parseFloat(d.lat)])[1])
+        .attr('r', 2.5)
+        .attr('fill', 'blue')
         .on('mouseover', d => {
-            // tip.show(d);
+            console.log(d);
         })
-        .on('mouseout', d => {
-            // tip.hide(d);
-        });
+
 }
