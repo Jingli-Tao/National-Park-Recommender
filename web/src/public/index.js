@@ -1,4 +1,4 @@
-let npd;
+let globalNpd;
 (async () => {
     const [stateTopo, postalCodes, parkData] = await Promise.all([
         d3.json('data/states-10m.json'),
@@ -7,7 +7,7 @@ let npd;
     ]);
     console.table(postalCodes);
     const postalCodesSet = new Set(postalCodes.map(pc => pc.postal_code));
-    npd = parkData
+    const npd = parkData
         .filter(row => {
             const isNatPark = row.designation === 'National Park'
             const isValidStates = row.states.split(',').some(state => postalCodesSet.has(state));
@@ -26,6 +26,7 @@ let npd;
 
     console.table(npd);
     buildMap(stateTopo, d3.select('#map'), npd);
+    globalNpd = npd; // This gives the window access to the dataset.
 })().catch(console.error);
 
 function getLatLong(row) {
