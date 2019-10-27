@@ -7,7 +7,51 @@
 </head>
 
 <body>
-    <svg id="map" height="600" width="1200"></svg>
+    <div style="display: flex; justify-content: center;">
+        <h1>National Park Search</h1>
+    </div>
+    <div class="content">
+        <div class="facets-container">
+            <div class="column-title">
+                <span>Filter Criteria</span>
+            </div>
+            <div class="facet-list">
+                <div class="crowd-container">
+                    <div>
+                        <span>Crowdedness</span>
+                    </div>
+                    <!-- Opts -->
+                </div>
+                <div class="cost-container">
+                    <div>
+                        <span>Trip Cost</span>
+                    </div>
+                    <!-- Opts -->
+                </div>
+                <div class="travel-time-container">
+                    <div>
+                        <span>Travel Time</span>
+                    </div>
+                    <!-- Opts -->
+                </div>
+                <div class="general-container">
+                    <div>
+                        <span>General</span>
+                    </div>
+                    <!-- Opts -->
+                </div>
+            </div>
+        </div>
+        <div class="usa-container">
+            <svg id="map" height="600" width="1000"></svg>
+        </div>
+        <div class="results-container">
+            <div class="column-title">
+                <span>Results</span>
+            </div>
+            <!-- This list is filled in by d3 -->
+            <div class="result-list"></div>
+        </div>
 </body>
 
 <!-- Load in the d3 library -->

@@ -15,7 +15,6 @@ let globalNpd;
             return isNatPark && isValidStates && hasLatLong;
         })
         .map(row => {
-            console.log(row);
             const { lat, long } = getLatLong(row);
             return {
                 ...row,
@@ -33,7 +32,7 @@ function getLatLong(row) {
     const [latStr, longStr] = row.latLong.split(', ');
     const [, lat] = latStr.split(':');
     const [, long] = longStr.split(':');
-    return { lat, long };
+    return { lat: parseFloat(lat), long: parseFloat(long) };
 }
 
 function buildMap(topo, svg, npd) {
@@ -49,16 +48,55 @@ function buildMap(topo, svg, npd) {
         .attr('fill', '#70a360')
         .attr('d', path);
 
+    plotParks(svg, npd, projection);
+    plotResults(npd);
+}
+
+function plotParks(svg, npd, projection) {
+    const defaultRadius = 2.5;
+    const defaultColor = 'blue';
+
+    svg.selectAll('circle').remove();
     svg.selectAll('circle')
+    .data(npd)
+    .enter()
+    .append('circle')
+    .attr('cx', d =>  projection([d.long, d.lat])[0])
+    .attr('cy', d =>  projection([d.long, d.lat])[1])
+    .attr('r', defaultRadius) // todo: Update size based on park ranking
+    .attr('fill', defaultColor)
+    .on('mouseover', (val, idx, array) => {
+        console.log(val);
+        const circle = array[idx];
+        d3.select(circle)
+            .attr('r', defaultRadius * 2)
+            .attr('fill', 'red');
+    })
+    .on('mouseout', (d, idx, array) => {
+        const circle = array[idx];
+        d3.select(circle)
+            .attr('r', defaultRadius)
+            .attr('fill', defaultColor);
+    });
+}
+
+function plotResults(npd) {
+    d3.select('.result-item').remove();
+    const resultList = d3.selectAll('.result-list');
+
+    const resultItems = resultList
+        .selectAll('div')
         .data(npd)
         .enter()
-        .append('circle')
-        .attr('cx', d =>  projection([parseFloat(d.long), parseFloat(d.lat)])[0])
-        .attr('cy', d =>  projection([parseFloat(d.long), parseFloat(d.lat)])[1])
-        .attr('r', 2.5)
-        .attr('fill', 'blue')
-        .on('mouseover', d => {
-            console.log(d);
-        })
+        .append('div')
+        .attr('class', 'result-item');
 
+    resultItems
+        .append('div')
+        .attr('class', 'park-name')
+        .text(d => d.name);
+    resultItems
+        .append('div')
+        .attr('class', 'park-description')
+        .text(d => d.description);
 }
