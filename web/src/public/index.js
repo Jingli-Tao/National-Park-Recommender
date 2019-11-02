@@ -5,7 +5,6 @@ let globalNpd;
         d3.csv('data/state_codes.csv'),
         d3.csv('http://localhost:8080/datafiles?filename=park_data.csv')
     ]);
-    console.table(postalCodes);
     const postalCodesSet = new Set(postalCodes.map(pc => pc.postal_code));
     const npd = parkData
         .filter(row => {
@@ -46,7 +45,6 @@ function buildMap(topo, svg, npd) {
         .data(topojson.feature(topo, topo.objects.states).features)
         .enter()
         .append('path')
-        // .attr('fill', '#70a360')
         .attr('class', 'state')
         .attr('d', path);
 
@@ -55,7 +53,7 @@ function buildMap(topo, svg, npd) {
         .attr("d", path(topojson.mesh(topo, topo.objects.states, function (a, b) { return a !== b; })));
 
     plotParks(svg, npd, projection);
-    plotResults(npd);
+    plotResults(npd); // todo: Filter out results based on facets.
 }
 
 function plotParks(svg, npd, projection) {
