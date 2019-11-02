@@ -2,6 +2,10 @@
     border: 1px solid black;
 }
 
+.states :hover {
+    /* fill: red; */
+}
+
 .content {
     display: flex;
     justify-content: space-around;
@@ -18,6 +22,11 @@
     margin: 0 10px;
 }
 
+.facet-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
 .usa-container {
     width: 100%;
 }
@@ -25,6 +34,11 @@
 .results-container {
     width: 100%;
     margin: 0 10px;
+}
+
+.shadow {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
 }
 
 .result-list {
@@ -41,8 +55,33 @@
     padding: 2px;
 }
 
+.park-name {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.park-description {
+    /* white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 400px; */
+}
+
 .facet-list {
     display: flex;
     justify-content: space-between;
     flex-direction: column;
 }
+
+.state {
+    fill: #b3deaf;
+}
+
+.state-borders {
+    fill: none;
+    stroke: #474f46;
+    stroke-width: 0.5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: none;
+  }

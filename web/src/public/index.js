@@ -41,43 +41,49 @@ function buildMap(topo, svg, npd) {
 
     const path = d3.geoPath().projection(projection);
     svg.append("g")
+        .attr('class', 'states')
         .selectAll('path')
         .data(topojson.feature(topo, topo.objects.states).features)
         .enter()
         .append('path')
-        .attr('fill', '#70a360')
+        // .attr('fill', '#70a360')
+        .attr('class', 'state')
         .attr('d', path);
+
+    svg.append("path")
+        .attr("class", "state-borders")
+        .attr("d", path(topojson.mesh(topo, topo.objects.states, function (a, b) { return a !== b; })));
 
     plotParks(svg, npd, projection);
     plotResults(npd);
 }
 
 function plotParks(svg, npd, projection) {
-    const defaultRadius = 2.5;
-    const defaultColor = 'blue';
+    const defaultRadius = 3.5;
+    const defaultColor = '#0026ff';
 
     svg.selectAll('circle').remove();
     svg.selectAll('circle')
-    .data(npd)
-    .enter()
-    .append('circle')
-    .attr('cx', d =>  projection([d.long, d.lat])[0])
-    .attr('cy', d =>  projection([d.long, d.lat])[1])
-    .attr('r', defaultRadius) // todo: Update size based on park ranking
-    .attr('fill', defaultColor)
-    .on('mouseover', (val, idx, array) => {
-        console.log(val);
-        const circle = array[idx];
-        d3.select(circle)
-            .attr('r', defaultRadius * 2)
-            .attr('fill', 'red');
-    })
-    .on('mouseout', (d, idx, array) => {
-        const circle = array[idx];
-        d3.select(circle)
-            .attr('r', defaultRadius)
-            .attr('fill', defaultColor);
-    });
+        .data(npd)
+        .enter()
+        .append('circle')
+        .attr('cx', d => projection([d.long, d.lat])[0])
+        .attr('cy', d => projection([d.long, d.lat])[1])
+        .attr('r', defaultRadius) // todo: Update size based on park ranking
+        .attr('fill', defaultColor)
+        .on('mouseover', (val, idx, array) => {
+            console.log(val);
+            const circle = array[idx];
+            d3.select(circle)
+                .attr('r', defaultRadius * 2)
+                // .attr('fill', 'red');
+        })
+        .on('mouseout', (d, idx, array) => {
+            const circle = array[idx];
+            d3.select(circle)
+                .attr('r', defaultRadius)
+                .attr('fill', defaultColor);
+        });
 }
 
 function plotResults(npd) {
@@ -89,7 +95,7 @@ function plotResults(npd) {
         .data(npd)
         .enter()
         .append('div')
-        .attr('class', 'result-item');
+        .attr('class', 'result-item shadow')
 
     resultItems
         .append('div')
