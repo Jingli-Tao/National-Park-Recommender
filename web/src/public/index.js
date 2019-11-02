@@ -52,11 +52,74 @@ function buildMap(topo, svg, npd) {
         .attr("class", "state-borders")
         .attr("d", path(topojson.mesh(topo, topo.objects.states, function (a, b) { return a !== b; })));
 
+    const filters = {
+        crowd: {
+            text: '',
+            value: 0,
+        },
+        month: {
+            text: '',
+            value: 0,
+        },
+    };
+
+    npd.sort((a, b) => a.name > b.name ? 1 : -1); // Sort parks alphabetically
+    console.log(npd.map(n => n.name));
+
+    plotCrowdedness(d3.select('.crowdedness'), (crowdedText, scale) => {
+        console.log('Selected Crowded Level', crowdedText, scale);
+        filters.crowd = { text: crowdedText, value: scale };
+        plotParks(svg, npd, projection, filters);
+        plotResults(npd); // todo: Filter or sort results based on new filters
+    });
+    plotTravelMonths(d3.select('.months'), (month, monthNum) => {
+        console.log('Selected Month', month, monthNum);
+        filters.month = { text: month, value: monthNum };
+        plotParks(svg, npd, projection, filters);
+        plotResults(npd); // todo: Filter or sort results based on new filters
+    });
+
     plotParks(svg, npd, projection);
     plotResults(npd); // todo: Filter out results based on facets.
 }
 
-function plotParks(svg, npd, projection) {
+function plotCrowdedness(select, onSelect) {
+    select.on('change', function onSelectChange() {
+        const opt = d3.select(this);
+        const name = opt.property('name');
+        const value = opt.property('value');
+        onSelect(name, value);
+    });
+
+    select
+        .selectAll('option')
+        .data(['Select a crowded level', 'Not Crowded', 'Average', 'Crowded', 'Very Crowded'])
+        .enter()
+        .append('option')
+        .attr('name', d => d)
+        .attr('value', (d, idx) => idx)
+        .text(d => d);
+}
+
+function plotTravelMonths(select, onSelect) {
+    select.on('change', function onSelectChange() {
+        const opt = d3.select(this);
+        const name = opt.property('name');
+        const value = opt.property('value');
+        onSelect(name, value);
+    });
+
+    select
+        .selectAll('option')
+        .data(['Select a month', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'])
+        .enter()
+        .append('option')
+        .attr('name', d => d)
+        .attr('value', (d, idx) => idx)
+        .text(d => d);
+}
+
+function plotParks(svg, npd, projection, filters) {
     const defaultRadius = 3.5;
     const defaultColor = '#0026ff';
 
@@ -74,7 +137,7 @@ function plotParks(svg, npd, projection) {
             const circle = array[idx];
             d3.select(circle)
                 .attr('r', defaultRadius * 2)
-                // .attr('fill', 'red');
+            // .attr('fill', 'red');
         })
         .on('mouseout', (d, idx, array) => {
             const circle = array[idx];
@@ -85,7 +148,8 @@ function plotParks(svg, npd, projection) {
 }
 
 function plotResults(npd) {
-    d3.select('.result-item').remove();
+    console.log(npd.map(m => m.name))
+    d3.selectAll('.result-item').remove();
     const resultList = d3.selectAll('.result-list');
 
     const resultItems = resultList
