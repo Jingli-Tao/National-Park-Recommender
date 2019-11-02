@@ -34,6 +34,7 @@ const dataFilesPath = path.join(__dirname, '../../Database');
     app.get('/datafiles', wrapExpress(async (req, res) => {
         const fileName = req.query.filename;
         const filePath = path.join(dataFilesPath, fileName);
+        console.log('Fetching ', filePath);
         if (!await fileExists(filePath)) {
             return res.sendStatus(404);
         }

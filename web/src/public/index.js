@@ -3,7 +3,7 @@ let globalNpd;
     const [stateTopo, postalCodes, parkData] = await Promise.all([
         d3.json('data/states-10m.json'),
         d3.csv('data/state_codes.csv'),
-        d3.csv('http://localhost:8080/datafiles?filename=park_data.csv')
+        d3.csv('/datafiles?filename=park_data.csv')
     ]);
     const postalCodesSet = new Set(postalCodes.map(pc => pc.postal_code));
     const npd = parkData
