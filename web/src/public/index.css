@@ -20,11 +20,25 @@
 .facets-container {
     width: 100%;
     margin: 0 10px;
+    display: flex;
+    justify-content: flex-end;
 }
 
-.facet-container {
+.facet-item {
     display: flex;
     flex-direction: column;
+    margin-top: 5px;
+}
+
+.facet-list {
+    display: flex;
+    /* justify-content: space-between; */
+    flex-direction: column;
+    width: 50%;
+}
+
+.facet {
+    margin-top: 5px;
 }
 
 .usa-container {
@@ -65,12 +79,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: 400px; */
-}
-
-.facet-list {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
 }
 
 .state {
