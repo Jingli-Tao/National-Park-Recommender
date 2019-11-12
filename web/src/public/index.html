@@ -8,32 +8,27 @@
 
 <body>
     <div style="display: flex; justify-content: center;">
-        <h1>National Park Search</h1>
+        <h1>National Park Recommender</h1>
+    </div>
+    <div class="facets-container">
+        <div class="facet-item month-container">
+            <div class="months-title">
+                <span>Travel Month</span>
+            </div>
+            <select class="facet months"></select>
+        </div>
     </div>
     <div class="content">
-        <div class="facets-container">
-            <div class="facet-list">
-                <div class="facet-item crowd-container">
-                    <div class="crowded-title">
-                        <span>Crowdedness</span>
-                    </div>
-                    <select class="facet crowdedness"></select>
-                </div>
-                <div class="facet-item month-container">
-                    <div class="months-title">
-                        <span>Travel Month</span>
-                    </div>
-                    <select class="facet months"></select>
-                </div>
-            </div>
+        <div class="tips-container">
+            <h3>Tips</h3>
+            <p>1. Select a travel month.</p>
+            <p>2. Click a park, and five other parks will be recommended. They are similar to the park you clicked.</p>
         </div>
         <div class="usa-container">
+            <!-- <svg id="map" height="600" width="1000" transform="translate(200, 0)"></svg> -->
             <svg id="map" height="600" width="1000"></svg>
         </div>
-        <div class="results-container">
-            <!-- This list is filled in by d3 -->
-            <div class="shadow result-list"></div>
-        </div>
+    </div>
 </body>
 
 <!-- Load in the d3 library -->
