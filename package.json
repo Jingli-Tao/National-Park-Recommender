@@ -10,10 +10,11 @@
   ],
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "nodemon src/index",
-    "start": "node src/index"
+    "dev": "nodemon src/server",
+    "start": "node src/server"
   },
   "dependencies": {
+    "aws-sdk": "^2.571.0",
     "body-parser": "^1.19.0",
     "express": "^4.17.1"
   },
