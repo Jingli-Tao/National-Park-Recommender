@@ -17,7 +17,7 @@ This will start the server on port *8080*
 
 If you wish to change the port, update the port environment variable
 ```bash
-port=3000 npm start
+PORT=3000 npm start
 ```
 
 To allow the server to restart on change:
