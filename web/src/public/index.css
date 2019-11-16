@@ -1,14 +1,6 @@
-#map {
-    border: 1px solid black;
-}
-
-.states :hover {
-    /* fill: red; */
-}
-
 .content {
     display: flex;
-    justify-content: space-around;
+    justify-content: flex-end;
 }
 
 .column-title {
@@ -21,33 +13,21 @@
     width: 100%;
     margin: 0 10px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
+    
 }
 
 .facet-item {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     margin-top: 5px;
-}
-
-.facet-list {
-    display: flex;
-    /* justify-content: space-between; */
-    flex-direction: column;
-    width: 50%;
-}
-
-.facet {
-    margin-top: 5px;
+    width: 15%;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .usa-container {
     width: 100%;
-}
-
-.results-container {
-    width: 100%;
-    margin: 0 10px;
 }
 
 .shadow {
@@ -56,39 +36,57 @@
 }
 
 .result-list {
+    position: absolute;
     display: flex;
     justify-content: space-between;
     flex-direction: column;
     max-height: 600px;
     overflow: auto;
+    width: 25%;
 }
 
 .result-item {
     margin: 5px 0;
     border: 1px solid black;
     padding: 2px;
+    background: white;
 }
 
 .park-name {
     font-weight: bold;
     font-size: 18px;
+    font-family: sans-serif;
 }
 
-.park-description {
-    /* white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 400px; */
+.park-campsite {
+    font-size: 12px;
+    font-family: sans-serif;
+    margin-top: 5px;
+}
+
+.park-trail {
+    font-size: 12px;
+    font-family: sans-serif;
+    margin-top: 5px;
+}
+
+.park-activity {
+    font-size: 12px;
+    font-family: sans-serif;
+    margin-top: 5px;
+    /* text-overflow: ellipsis; */
+    /* overflow: hidden; */
+    white-space: nowrap;
 }
 
 .state {
-    fill: #b3deaf;
+    fill:#c2d1ca;
 }
 
 .state-borders {
     fill: none;
-    stroke: #474f46;
-    stroke-width: 0.5px;
+    stroke: #ffffff;
+    stroke-width: 1px;
     stroke-linejoin: round;
     stroke-linecap: round;
     pointer-events: none;
@@ -96,8 +94,41 @@
 
 .months-title {
     display: block;
+    text-align: center;
 }
 
 .months {
     display: block;
+}
+
+div.tooltip {
+    position: absolute;
+}
+
+img {
+    width: 320px;
+    height: 240px;
+}
+
+circle.park-circle {
+    fill-opacity: 0.8;
+    stroke: white;
+    stroke-width: 1.5;
+}
+
+circle.highlight {
+    fill-opacity: 0.8;
+    stroke: white;
+    stroke-width: 1.5;
+}
+
+#close-result {
+    font-weight: bold;
+}
+
+.tips-container {
+    display: block;
+    width: 25%;
+    height: 10%;
+    margin-left: 30px;
 }
