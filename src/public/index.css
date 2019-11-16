@@ -13,8 +13,7 @@
     width: 100%;
     margin: 0 10px;
     display: flex;
-    justify-content: center;
-    
+    justify-content: center; 
 }
 
 .facet-item {
@@ -35,27 +34,49 @@
     transition: 0.3s;
 }
 
-.result-list {
+.result-container {
     position: absolute;
+    display: flex;
+    flex-direction: row;
+    width: 23%;
+}
+
+#result-toggle {
+    width: 30px;
+    height: 30px;
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 0px 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 8px;
+    font-weight: bold;
+}
+
+.result-list {
     display: flex;
     justify-content: space-between;
     flex-direction: column;
     max-height: 600px;
     overflow: auto;
-    width: 25%;
+    border: 1px solid white;
+    background: white;
 }
 
 .result-item {
     margin: 5px 0;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     padding: 2px;
     background: white;
 }
 
 .park-name {
     font-weight: bold;
-    font-size: 18px;
+    font-size: 16px;
     font-family: sans-serif;
+    color: steelblue;
 }
 
 .park-campsite {
@@ -74,8 +95,8 @@
     font-size: 12px;
     font-family: sans-serif;
     margin-top: 5px;
-    /* text-overflow: ellipsis; */
-    /* overflow: hidden; */
+    text-overflow: ellipsis;
+    overflow: hidden;
     white-space: nowrap;
 }
 
@@ -105,9 +126,9 @@ div.tooltip {
     position: absolute;
 }
 
-img {
-    width: 320px;
-    height: 240px;
+img.tooltip {
+    width: 240px;
+    height: 180px;
 }
 
 circle.park-circle {
@@ -127,8 +148,27 @@ circle.highlight {
 }
 
 .tips-container {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    width: 23%;
+}
+
+.about {
     display: block;
-    width: 25%;
-    height: 10%;
     margin-left: 30px;
+    text-align: justify;
+}
+
+#legend {
+    width: 180px;
+    height: 120px;
+    margin-left: 30px;
+    margin-bottom: 30px;
+}
+
+text.highlight {
+    font-size: 12;
+    font-family: sans-serif;
+    font-weight: bold;
 }
