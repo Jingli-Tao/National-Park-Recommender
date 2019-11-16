@@ -6,7 +6,7 @@ const sqlite = require('sqlite3');
 const fs = require('fs');
 const fsPromises = fs.promises;
 
-const port = process.env.port || 8080;
+const port = process.env.PORT || 8080; 
 
 // File path to the database files (csv, tsv)
 const dataFilesPath = path.join(__dirname, '../../Database');

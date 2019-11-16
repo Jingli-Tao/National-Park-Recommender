@@ -1,36 +1,35 @@
 let globalNpd;
 (async () => {
     const [stateTopo, npd, scores] = await Promise.all([
-            d3.json('data/states-10m.json'),
-            d3.csv('/datafiles?filename=park_info.csv'),
-            d3.csv('/datafiles?filename=result_similarity.csv', parseSimilarity)
+            d3.json("data/states-10m.json"),
+            d3.csv("/datafiles?filename=park_info.csv"),
+            d3.csv("/datafiles?filename=result_similarity.csv", parseSimilarity)
     ]);
     
     // Remove parks that are not in the continental United States
-    const ind1 = npd.findIndex(d => d.name === 'Virgin Islands NP');
-    const ind2 = npd.findIndex(d => d.name === 'National Park of American Samoa');
+    const ind1 = npd.findIndex(d => d.name === "Virgin Islands NP");
+    const ind2 = npd.findIndex(d => d.name === "National Park of American Samoa");
     npd.splice(ind1, 1);
     npd.splice(ind2, 1);
 
-    const reshapedNpd = reshapeParkData(npd);
+    globalNpd = reshapeParkData(npd); // Reshape data
 
-    buildMap(stateTopo, d3.select('#map'), npd, reshapedNpd, scores);
-    globalNpd = npd; // This gives the window access to the dataset.
+    buildMap(stateTopo, d3.select("#map"), npd, scores);
 })().catch(console.error);
 
-function buildMap(topo, svg, npd, reshapedNpd, scores) {
+function buildMap(topo, svg, npd, scores) {
     const defaultScale = d3.geoAlbersUsa().scale();
     const projection = d3.geoAlbersUsa().translate([480, 300]).scale(defaultScale * 600 / 510);
 
     const path = d3.geoPath().projection(projection);
     svg.append("g")
-        .attr('class', 'states')
-        .selectAll('path')
+        .attr("class", "states")
+        .selectAll("path")
         .data(topojson.feature(topo, topo.objects.states).features)
         .enter()
-        .append('path')
-        .attr('class', 'state')
-        .attr('d', path);
+        .append("path")
+        .attr("class", "state")
+        .attr("d", path);
 
     svg.append("path")
         .attr("class", "state-borders")
@@ -49,112 +48,111 @@ function buildMap(topo, svg, npd, reshapedNpd, scores) {
 
     npd.sort((a, b) => a.name > b.name ? 1 : -1); // Sort parks alphabetically
 
-    plotTravelMonths(d3.select('.months'), (month, monthNum) => {
-        console.log('Selected Month', month, monthNum);
+    plotTravelMonths(d3.select(".months"), (month, monthNum) => {
+        // console.log("Selected Month", month, monthNum);
         filters.month = { text: month, value: monthNum };
-        plotParks(svg, reshapedNpd, scores, projection, filters);
+        plotParks(svg, scores, projection, filters);
     });
 
-    plotParks(svg, reshapedNpd, scores, projection, filters);
+    plotParks(svg, scores, projection, filters);
 }
 
 function plotTravelMonths(select, onSelect) {
-    select.on('change', function onSelectChange() {
+    select.on("change", function onSelectChange() {
         const opt = d3.select(this);
-        const name = opt.property('name');
-        const value = opt.property('value');
+        const name = opt.property("name");
+        const value = opt.property("value");
         onSelect(name, value);
     });
 
     select
-        .selectAll('option')
-        .data(['Select a month', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'])
+        .selectAll("option")
+        .data(["Select a month", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
         .enter()
-        .append('option')
-        .attr('name', d => d)
-        .attr('value', (d, idx) => idx)
+        .append("option")
+        .attr("name", d => d)
+        .attr("value", (d, idx) => idx)
         .text(d => d);
 }
 
-function plotParks(svg, reshapedNpd, scores, projection, filters) {
-    const defaultColor = '#4682b4';
-    let selected_month = parseInt(filters.month.value),
-        parkMonthData = getMonthlyVisit(reshapedNpd, selected_month);
+function plotParks(svg, scores, projection, filters) {
+    const defaultColor = "#4682b4";
+    const selected_month = parseInt(filters.month.value),
+        parkMonthData = getMonthlyVisit(selected_month);
     
-    const parkRadius = d3.scaleLinear().range([4, 10]).domain(d3.extent(parkMonthData, d => d.visits));
-    const tooltip = d3.select("body").append("div") // for image
+    const parkRadius = d3.scaleLinear().range([4, 12]).domain(d3.extent(parkMonthData, d => d.visits*1000));
+    const tooltip = d3.select("body").append("div") // for park image
         .attr("class", "tooltip")
         .style("opacity", 1e-6);
 
-    svg.selectAll('g.parks').remove();
+    svg.selectAll("g.parks").remove();
+    svg.select("div.tooltip").remove();
     
     const parks = svg.append("g")
-        .attr('class', 'park')
+        .attr("class", "parks")
         .selectAll("g")
         .data(parkMonthData)
         .enter()
         .append("g")
-        .attr('class', 'parks');
+        .attr("class", "park");
     
     parks.append("circle")
-        .attr('cx', d => projection([d.long, d.lat])[0])
-        .attr('cy', d => projection([d.long, d.lat])[1])
-        .attr("r",  d => parkRadius(d.visits))
-        .attr('fill', defaultColor)
-        .attr('class', 'park-circle');
+        .attr("cx", d => projection([d.long, d.lat])[0])
+        .attr("cy", d => projection([d.long, d.lat])[1])
+        .attr("r",  d => parkRadius(d.visits*1000))
+        .attr("fill", defaultColor)
+        .attr("class", "park-circle");
 
-    parks.append("text")
-        .attr("x", d => projection([d.long, d.lat])[0]-10)
-        .attr("y", d => projection([d.long, d.lat])[1]-15)
-        .text(d => d.name)
-        .attr("font-size", 10)
-        .attr("family", "sans-serif")
-        .style("visibility", "hidden")
-        .attr('class', 'park-label');
-    
-    parks.append("image") // marker for the clicked park
-        .attr("x", d => projection([d.long, d.lat])[0]-15)
-        .attr("y", d => projection([d.long, d.lat])[1]-25)
-        .attr('xlink:href', 'https://drive.google.com/uc?id=1uz2TfUyPDkKyYUqCVt6Br1gcTadX-xHL')
-        .attr('width', 30)
-        .attr('height', 30)
-        .style("visibility", "hidden");
-    
     // Highlight similar parks
-    parks.on('click', function(){
+    parks.on("click", function highlightSimilarPark(){
         // Clear highlights
         d3.selectAll("circle.highlight").style("fill", defaultColor);
-        d3.selectAll("text.highlight").style("visibility", "hidden");
-        d3.selectAll("image.highlight").style("visibility", "hidden");
+        d3.selectAll("text.highlight").remove();
+        d3.selectAll("image.highlight").remove();
 
         // Mark the clicked park
         d3.select(this)
-            .select("image")
-            .style("visibility", "visible")
+            .append("svg:image")
+            .attr("x", d => projection([d.long, d.lat])[0]-15)
+            .attr("y", d => projection([d.long, d.lat])[1]-25)
+            .attr("href", "image/pin.png")
+            .attr("width", 30)
+            .attr("height", 30)
             .attr("class", "highlight");
         
         // Hilight recommended parks
-        let selected_park = d3.select(this).datum().name,
-            recommendations = getRecomendation(scores, selected_month, selected_park),
-            matches = parkMonthData.filter(d => recommendations.includes(d.name));
-        
-        parks.filter(d => recommendations.includes(d.name))
+        const selected_park = d3.select(this).datum().name,
+            recommendations = getRecomendation(scores, selected_month, selected_park)
+            hilights = parks.filter(d => recommendations.includes(d.name));
+            
+        hilights
             .selectAll("circle")
             .style("fill", "#FF5908")
             .attr("class", "highlight");
-        parks.filter(d => recommendations.includes(d.name))
-            .selectAll("text")
-            .style("visibility", "visible")
+        hilights
+            .append("text")
+            .attr("x", d => projection([d.long, d.lat])[0]-5)
+            .attr("y", d => projection([d.long, d.lat])[1]-10)
+            .text(function(d) {
+                return recommendations.findIndex(r => r === d.name)+1;
+            })
             .attr("class", "highlight");
         
-        // Show details of recommended parks
-        plotResults(matches);
+        // Show details of clicked and recommended parks
+        const results = [...recommendations];
+        results.push(selected_park);
+    
+        const plotData = parkMonthData.filter(d => results.includes(d.name));
+        plotData.forEach(match => match.rank = recommendations.findIndex(r => r === match.name)+1); // add rank
+        plotData.sort(function(a,b) {return a.rank - b.rank;}) // sort per rank
+ 
+        plotResults(plotData);
     });
 
     // Display park image when mouse hover
-    parks.on('mouseover', function(d) {
+    parks.on('mouseover', function mouseOver(d) {
         let current_position = d3.mouse(this);
-        let content = `<h3>` + d.name + `</h3><img src=` + d.url + `>`;
+        let content = `<h3>` + d.name + `</h3><img src=` + d.url + ` class="tooltip" alt="park image">`;
 
         d3.select(this).select("circle").attr("r", 15);
 
@@ -162,33 +160,54 @@ function plotParks(svg, reshapedNpd, scores, projection, filters) {
             .style("visibility", "visible"); 
         
         tooltip.html(content)
-            .style("left", function(){
-                if(current_position[0] > 700) return (d3.event.pageX-350) + "px";
+            .style("left", function(){ // position image per window position
+                if(current_position[0] > 700) return (d3.event.pageX-280) + "px";
                 return (d3.event.pageX+25) + "px";
             })
-            .style("top",function(){
+            .style("top",function(){ // position image per window position
                 if(current_position[1] < 150) return (d3.event.pageY-20) + "px";
-                else if(current_position[1] > 400) return (d3.event.pageY-300) + "px";
+                else if(current_position[1] > 400) return (d3.event.pageY-250) + "px";
                 else return (d3.event.pageY-150) + "px";
             });
-        
-    }).on('mouseout', function(){
-        d3.select(this).select("circle").attr("r", d => parkRadius(d.visits));
+    }).on('mouseout', function mouseOut(){
+        d3.select(this).select("circle").attr("r", d => parkRadius(d.visits*1000));
         tooltip.style("visibility", "hidden");
     });
 }
 
 function plotResults(matches) {
-    d3.selectAll('.result-item').remove();
-    const resultList = d3.select('.content')
+    d3.select('.result-container').remove();
+    
+    const resultContainer = d3.select('.content')
         .append('div')
+        .attr('class', 'result-container');
+    
+    const toggleButton = resultContainer
+        .append('button')
+        .attr('id', 'result-toggle')
+        .text('Hide');
+
+    toggleButton.on('click', function(){
+        if (toggleButton.text() === 'Hide') {
+            toggleButton.text('Show');
+            resultContainer.style('width', '3%');
+        }
+        else{
+            toggleButton.text('Hide');
+            resultContainer.style('width', '23%');
+        }
+    });
+    
+    const resultList = resultContainer.append('div')
         .attr('class', 'result-list');
 
     resultList
         .append('button')
         .attr('id', 'close-result')
         .text('Close')
-        .on('click', closeResult);
+        .on('click', function(){
+            d3.select('.result-container').remove();
+        });
 
     const resultItems = resultList
         .selectAll('div')
@@ -197,10 +216,28 @@ function plotResults(matches) {
         .append('div')
         .attr('class', 'result-item shadow');
     
+    // resultItems
+    //     .append('div')
+    //     .attr('class', 'park-name')
+    //     // .text(d => d.rank + "." + d.name);
+    //     .text(function(d){
+    //         if(d.rank === 0) return d.name;
+    //         return d.rank + "." + d.name;
+    //     })
+    //     .on("click", function(d){
+    //         // d3.select(this).style("color", "blue");
+    //         window.open(d.homepage);
+    //     });
     resultItems
-        .append('div')
+        .append('a')
         .attr('class', 'park-name')
-        .text(d => d.name);
+        // .text(d => d.rank + "." + d.name);
+        .text(function(d){
+            if(d.rank === 0) return d.name;
+            return d.rank + ". " + d.name;
+        })
+        .attr("href", d => d.homepage);
+    
     resultItems
         .append('div')
         .attr('class', 'park-campsite')
@@ -215,24 +252,19 @@ function plotResults(matches) {
         .text(d => 'Activities: ' + d.activity);
 }
 
-function closeResult(){
-    d3.selectAll('.result-item').remove();
-    d3.selectAll('#close-result').remove();
-}
-
 function reshapeParkData(data){
-    // Reshape data
     var newData = [];
     data.forEach(function(row) {
         Object.keys(row).forEach(function(colname) {
-            if(colname === "name" || colname === "lat" || colname === "long" || colname === "area" || colname === "url" || colname === "campsites" || colname === "trails" || colname === "activity") {
+            if(colname === "name" || colname === "lat" || colname === "long" || colname === "area" || colname === "url" || colname === "homepage" || colname === "campsites" || colname === "trails" || colname === "activity") {
                 return;
             }
             newData.push({name: row.name, 
                 lat: +row.lat, 
                 long: +row.long, 
                 area: +row.area / 1000000, 
-                url: row.url, 
+                url: row.url,
+                homepage: row.homepage,
                 campsites: +row.campsites,
                 trails: +row.trails,
                 activity: row.activity,
@@ -262,35 +294,34 @@ function parseSimilarity(row){
         +row['crowdedness similarity Dec']];
 }
 
-
-function getMonthlyVisit(reshapedNpd, selected_month) {
+function getMonthlyVisit(selected_month) {
     switch(selected_month) {
         case 0:
-            return reshapedNpd.filter(d => d.month === 'jan');
+            return globalNpd.filter(d => d.month === 'jan');
         case 1:
-            return reshapedNpd.filter(d => d.month === 'jan');
+            return globalNpd.filter(d => d.month === 'jan');
         case 2:
-            return reshapedNpd.filter(d => d.month === 'feb');
+            return globalNpd.filter(d => d.month === 'feb');
         case 3:
-            return reshapedNpd.filter(d => d.month === 'mar');
+            return globalNpd.filter(d => d.month === 'mar');
         case 4:
-            return reshapedNpd.filter(d => d.month === 'apr');
+            return globalNpd.filter(d => d.month === 'apr');
         case 5:
-            return reshapedNpd.filter(d => d.month === 'may');
+            return globalNpd.filter(d => d.month === 'may');
         case 6:
-            return reshapedNpd.filter(d => d.month === 'jun');
+            return globalNpd.filter(d => d.month === 'jun');
         case 7:
-            return reshapedNpd.filter(d => d.month === 'jul');
+            return globalNpd.filter(d => d.month === 'jul');
         case 8:
-            return reshapedNpd.filter(d => d.month === 'aug');
+            return globalNpd.filter(d => d.month === 'aug');
         case 9:
-            return reshapedNpd.filter(d => d.month === 'sep');
+            return globalNpd.filter(d => d.month === 'sep');
         case 10:
-            return reshapedNpd.filter(d => d.month === 'oct');
+            return globalNpd.filter(d => d.month === 'oct');
         case 11:
-            return reshapedNpd.filter(d => d.month === 'nov');
+            return globalNpd.filter(d => d.month === 'nov');
         case 12:
-            return reshapedNpd.filter(d => d.month === 'dec');
+            return globalNpd.filter(d => d.month === 'dec');
     }
 }
 
@@ -316,6 +347,7 @@ function getRecomendation(scores, selected_month, selected_park, threshold=0.25,
         
         if (selected_park == scores[i][0] && selected_park != scores[i][1]){
             park = scores[i][1]
+            if(park === 'Virgin Islands NP' || park === 'National Park of American Samoa') continue; // exclude parks that are not in the continental United States
             activity_score = scores[i][2];
             crowdness_score = scores[i][selected_month+2];
             distance = Math.sqrt(Math.pow(activity_score-center[0], 2) + Math.pow(crowdness_score-center[1], 2));
@@ -330,3 +362,9 @@ function getRecomendation(scores, selected_month, selected_park, threshold=0.25,
 
     return recomanded_parks;
 }
+
+// let matches = parkMonthData.filter(d => recommendations.includes(d.name));
+// matches.forEach(match => match.rank = recommendations.findIndex(r => r === match.name)+1); // add rank
+// matches.sort(function(a,b) {return a.rank - b.rank;}) // sort per rank
+
+// plotResults(matches);

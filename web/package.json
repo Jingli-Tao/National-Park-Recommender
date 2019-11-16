@@ -2,13 +2,14 @@
   "name": "cse6242-project",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/Jingli-Tao/cse6242-project.git",
+  "repository": "https://github.com/Jingli-Tao/cse6242-project-private.git",
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "nodemon src/index",
-    "start": "node src/index"
+    "dev": "nodemon src/server",
+    "start": "node src/server"
   },
   "dependencies": {
+    "aws-sdk": "^2.571.0",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "sqlite3": "^4.1.0"
