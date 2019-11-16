@@ -1,7 +1,7 @@
 let globalNpd;
 (async () => {
     const [stateTopo, npd, scores] = await Promise.all([
-            d3.json('data/states-10m.json'),
+            d3.json('/datafiles?filename=states-10m.json'),
             d3.csv('/datafiles?filename=park_info.csv'),
             d3.csv('/datafiles?filename=result_similarity.csv', parseSimilarity)
     ]);
