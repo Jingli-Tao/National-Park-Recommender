@@ -2,8 +2,13 @@
   "name": "cse6242-project",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/Jingli-Tao/cse6242-project-private.git",
+  "repository": "https://github.com/Jingli-Tao/cse6242-project.git",
   "license": "UNLICENSED",
+  "contributors": [
+    "Cameron Darling", "cdarling9@gatech.edu",
+    "Jingli Tao", "jtao41@gatech.edu",
+    "Nick Zelei", "nzelei3@gatech.edu"
+  ],
   "scripts": {
     "dev": "nodemon web/server",
     "start": "node web/server"
