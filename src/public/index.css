@@ -50,9 +50,11 @@
     transition: 0.3s;
 }
 
-.about-legend {
+.result-container {
+    position: absolute;
     display: flex;
-    justify-content: flex-end;
+    flex-direction: row;
+    width: 23%;
 }
 
 #result-toggle {
@@ -162,20 +164,24 @@ circle.highlight {
     font-weight: bold;
 }
 
-.about {
+.tips-container {
     display: flex;
+    justify-content: space-between;
     flex-direction: column;
-    margin-left: 130px;
+    width: 23%;
 }
 
-.about p {
-    margin: 4px;
+.about {
+    display: block;
+    margin-left: 30px;
     text-align: justify;
 }
 
 #legend {
     width: 180px;
     height: 120px;
+    margin-left: 30px;
+    margin-bottom: 30px;
 }
 
 text.highlight {

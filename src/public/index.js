@@ -1,9 +1,9 @@
 let globalNpd;
 (async () => {
     const [stateTopo, npd, scores] = await Promise.all([
-        d3.json("/datafiles?filename=states-10m.json"),
-        d3.csv("/datafiles?filename=park_info.csv"),
-        d3.csv("/datafiles?filename=result_similarity.csv", parseSimilarity)
+            d3.json("/datafiles?filename=states-10m.json"),
+            d3.csv("/datafiles?filename=park_info.csv"),
+            d3.csv("/datafiles?filename=result_similarity.csv", parseSimilarity)
     ]);
 
     // Remove parks that are not in the continental United States
@@ -79,15 +79,14 @@ function plotParks(svg, scores, projection, filters) {
     const defaultColor = "#4682b4";
     const selected_month = parseInt(filters.month.value),
         parkMonthData = getMonthlyVisit(selected_month);
-
-    const parkRadius = d3.scaleLinear().range([4, 12]).domain(d3.extent(parkMonthData, d => d.visits * 1000));
+    
+    const parkRadius = d3.scaleLinear().range([4, 12]).domain(d3.extent(parkMonthData, d => d.visits*1000));
     const tooltip = d3.select("body").append("div") // for park image
         .attr("class", "tooltip")
         .style("opacity", 1e-6);
 
     svg.selectAll("g.parks").remove();
     svg.select("div.tooltip").remove();
-
     const parks = svg.append("g")
         .attr("class", "parks")
         .selectAll("g")
@@ -95,16 +94,16 @@ function plotParks(svg, scores, projection, filters) {
         .enter()
         .append("g")
         .attr("class", "park");
-
+  
     parks.append("circle")
         .attr("cx", d => projection([d.long, d.lat])[0])
         .attr("cy", d => projection([d.long, d.lat])[1])
-        .attr("r", d => parkRadius(d.visits * 1000))
+        .attr("r",  d => parkRadius(d.visits*1000))
         .attr("fill", defaultColor)
         .attr("class", "park-circle");
 
     // Highlight similar parks
-    parks.on("click", function highlightSimilarPark() {
+    parks.on("click", function highlightSimilarPark(){
         // Clear highlights
         d3.selectAll("circle.highlight").style("fill", defaultColor);
         d3.selectAll("text.highlight").remove();
@@ -113,8 +112,8 @@ function plotParks(svg, scores, projection, filters) {
         // Mark the clicked park
         d3.select(this)
             .append("svg:image")
-            .attr("x", d => projection([d.long, d.lat])[0] - 15)
-            .attr("y", d => projection([d.long, d.lat])[1] - 25)
+            .attr("x", d => projection([d.long, d.lat])[0]-15)
+            .attr("y", d => projection([d.long, d.lat])[1]-25)
             .attr("href", "image/pin.png")
             .attr("width", 30)
             .attr("height", 30)
@@ -123,29 +122,29 @@ function plotParks(svg, scores, projection, filters) {
         // Hilight recommended parks
         const selected_park = d3.select(this).datum().name,
             recommendations = getRecomendation(scores, selected_month, selected_park)
-        hilights = parks.filter(d => recommendations.includes(d.name));
-
+            hilights = parks.filter(d => recommendations.includes(d.name));
+            
         hilights
             .selectAll("circle")
             .style("fill", "#FF5908")
             .attr("class", "highlight");
         hilights
             .append("text")
-            .attr("x", d => projection([d.long, d.lat])[0] - 5)
-            .attr("y", d => projection([d.long, d.lat])[1] - 10)
-            .text(function (d) {
-                return recommendations.findIndex(r => r === d.name) + 1;
+            .attr("x", d => projection([d.long, d.lat])[0]-5)
+            .attr("y", d => projection([d.long, d.lat])[1]-10)
+            .text(function(d) {
+                return recommendations.findIndex(r => r === d.name)+1;
             })
             .attr("class", "highlight");
-
+        
         // Show details of clicked and recommended parks
         const results = [...recommendations];
         results.push(selected_park);
-
+    
         const plotData = parkMonthData.filter(d => results.includes(d.name));
-        plotData.forEach(match => match.rank = recommendations.findIndex(r => r === match.name) + 1); // add rank
-        plotData.sort(function (a, b) { return a.rank - b.rank; }) // sort per rank
-
+        plotData.forEach(match => match.rank = recommendations.findIndex(r => r === match.name)+1); // add rank
+        plotData.sort(function(a,b) {return a.rank - b.rank;}) // sort per rank
+ 
         plotResults(plotData);
     });
 
@@ -160,46 +159,44 @@ function plotParks(svg, scores, projection, filters) {
             .style("visibility", "visible");
 
         tooltip.html(content)
-            .style("left", function () { // position image per window position
-                if (current_position[0] > 700) return (d3.event.pageX - 280) + "px";
-                return (d3.event.pageX + 25) + "px";
+            .style("left", function(){ // position image per window position
+                if(current_position[0] > 700) return (d3.event.pageX-280) + "px";
+                return (d3.event.pageX+25) + "px";
             })
-            .style("top", function () { // position image per window position
-                if (current_position[1] < 150) return (d3.event.pageY - 20) + "px";
-                else if (current_position[1] > 400) return (d3.event.pageY - 250) + "px";
-                else return (d3.event.pageY - 150) + "px";
+            .style("top",function(){ // position image per window position
+                if(current_position[1] < 150) return (d3.event.pageY-20) + "px";
+                else if(current_position[1] > 400) return (d3.event.pageY-250) + "px";
+                else return (d3.event.pageY-150) + "px";
             });
-    }).on('mouseout', function mouseOut() {
-        d3.select(this).select("circle").attr("r", d => parkRadius(d.visits * 1000));
+    }).on('mouseout', function mouseOut(){
+        d3.select(this).select("circle").attr("r", d => parkRadius(d.visits*1000));
         tooltip.style("visibility", "hidden");
     });
 }
 
 function plotResults(matches) {
-    const resultsContainer = d3.select('.results-container');
-    closeResults();
-
-    const toggleButton = resultsContainer
+    d3.select('.result-container').remove();
+    
+    const resultContainer = d3.select('.content')
+        .append('div')
+        .attr('class', 'result-container');
+    
+    const toggleButton = resultContainer
         .append('button')
         .attr('id', 'result-toggle')
         .text('Hide');
 
-    const resultContainer = resultsContainer
-        .append('div')
-        .attr('class', 'result-container');
-
-
-    toggleButton.on('click', function () {
+    toggleButton.on('click', function(){
         if (toggleButton.text() === 'Hide') {
             toggleButton.text('Show');
-            resultContainer.style('display', 'none');
+            resultContainer.style('width', '3%');
         }
-        else {
+        else{
             toggleButton.text('Hide');
-            resultContainer.style('display', 'flex');
+            resultContainer.style('width', '23%');
         }
     });
-
+    
     const resultList = resultContainer.append('div')
         .attr('class', 'result-list');
 
@@ -207,8 +204,8 @@ function plotResults(matches) {
         .append('button')
         .attr('id', 'close-result')
         .text('Close')
-        .on('click', function () {
-            closeResults();
+        .on('click', function(){
+            d3.select('.result-container').remove();
         });
 
     const resultItems = resultList
@@ -217,17 +214,29 @@ function plotResults(matches) {
         .enter()
         .append('div')
         .attr('class', 'result-item shadow');
-
+    
+    // resultItems
+    //     .append('div')
+    //     .attr('class', 'park-name')
+    //     // .text(d => d.rank + "." + d.name);
+    //     .text(function(d){
+    //         if(d.rank === 0) return d.name;
+    //         return d.rank + "." + d.name;
+    //     })
+    //     .on("click", function(d){
+    //         // d3.select(this).style("color", "blue");
+    //         window.open(d.homepage);
+    //     });
     resultItems
         .append('a')
         .attr('class', 'park-name')
         // .text(d => d.rank + "." + d.name);
-        .text(function (d) {
-            if (d.rank === 0) return d.name;
+        .text(function(d){
+            if(d.rank === 0) return d.name;
             return d.rank + ". " + d.name;
         })
         .attr("href", d => d.homepage);
-
+  
     resultItems
         .append('div')
         .attr('class', 'park-campsite')
@@ -242,23 +251,17 @@ function plotResults(matches) {
         .text(d => 'Activities: ' + d.activity);
 }
 
-function closeResults() {
-    d3.select('.result-container').remove();
-    d3.select('#result-toggle').remove();
-}
-
-function reshapeParkData(data) {
+function reshapeParkData(data){
     var newData = [];
-    data.forEach(function (row) {
-        Object.keys(row).forEach(function (colname) {
-            if (colname === "name" || colname === "lat" || colname === "long" || colname === "area" || colname === "url" || colname === "homepage" || colname === "campsites" || colname === "trails" || colname === "activity") {
+    data.forEach(function(row) {
+        Object.keys(row).forEach(function(colname) {
+            if(colname === "name" || colname === "lat" || colname === "long" || colname === "area" || colname === "url" || colname === "homepage" || colname === "campsites" || colname === "trails" || colname === "activity") {
                 return;
             }
-            newData.push({
-                name: row.name,
-                lat: +row.lat,
-                long: +row.long,
-                area: +row.area / 1000000,
+            newData.push({name: row.name, 
+                lat: +row.lat, 
+                long: +row.long, 
+                area: +row.area / 1000000, 
                 url: row.url,
                 homepage: row.homepage,
                 campsites: +row.campsites,
@@ -292,7 +295,7 @@ function parseSimilarity(row) {
 }
 
 function getMonthlyVisit(selected_month) {
-    switch (selected_month) {
+    switch(selected_month) {
         case 0:
             return globalNpd.filter(d => d.month === 'jan');
         case 1:
@@ -344,7 +347,7 @@ function getRecomendation(scores, selected_month, selected_park, threshold = 0.2
 
         if (selected_park == scores[i][0] && selected_park != scores[i][1]) {
             park = scores[i][1]
-            if (park === 'Virgin Islands NP' || park === 'National Park of American Samoa') continue; // exclude parks that are not in the continental United States
+            if(park === 'Virgin Islands NP' || park === 'National Park of American Samoa') continue; // exclude parks that are not in the continental United States
             activity_score = scores[i][2];
             crowdness_score = scores[i][selected_month + 2];
             distance = Math.sqrt(Math.pow(activity_score - center[0], 2) + Math.pow(crowdness_score - center[1], 2));
