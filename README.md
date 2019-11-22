@@ -1,14 +1,27 @@
 # cse6242-project
 Group project for CSE6242 fall 2019
 
-This branch contains:
+# Starting the Web Server
 
-**1. activity_similarity.py**: calculate similarity according to activity.
+* Download the latest [Node LTS (12.x.x)](https://nodejs.org/en/download/)
+* Installing dependencies
+```bash
+npm install
+```
+* Starting the server
+```bash
+npm start
+```
 
-**2. new_cobined.csv**: merge all data in Database except of park_data.csv.
+This will start the server on port *8080*
 
-**3. result_similarity.csv**: final similarity scores.
+If you wish to change the port, update the port environment variable
+```bash
+PORT=3000 npm start
+```
 
-**4. List_result.py**: get park recommendations based on similarity scores.
-
-**5. get_recommendation.js**: implement List_result.py in javascript.
+To allow the server to restart on change:
+```bash
+npm run dev
+```
+Any time changes are made to the javascript source code, the server will auto-restart itself.
