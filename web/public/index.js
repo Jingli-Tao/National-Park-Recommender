@@ -1,9 +1,9 @@
 let globalNpd;
 (async () => {
     const [stateTopo, npd, scores] = await Promise.all([
-            d3.json("/datafiles?filename=states-10m.json"),
-            d3.csv("/datafiles?filename=park_info.csv"),
-            d3.csv("/datafiles?filename=result_similarity.csv", parseSimilarity)
+        d3.json("/datafiles?filename=states-10m.json"),
+        d3.csv("/datafiles?filename=park_info.csv"),
+        d3.csv("/datafiles?filename=result_similarity.csv", parseSimilarity)
     ]);
 
     // Remove parks that are not in the continental United States
@@ -87,6 +87,7 @@ function plotParks(svg, scores, projection, filters) {
 
     svg.selectAll("g.parks").remove();
     svg.select("div.tooltip").remove();
+    
     const parks = svg.append("g")
         .attr("class", "parks")
         .selectAll("g")
@@ -94,7 +95,7 @@ function plotParks(svg, scores, projection, filters) {
         .enter()
         .append("g")
         .attr("class", "park");
-  
+    
     parks.append("circle")
         .attr("cx", d => projection([d.long, d.lat])[0])
         .attr("cy", d => projection([d.long, d.lat])[1])
@@ -118,7 +119,7 @@ function plotParks(svg, scores, projection, filters) {
             .attr("width", 30)
             .attr("height", 30)
             .attr("class", "highlight");
-
+        
         // Hilight recommended parks
         const selected_park = d3.select(this).datum().name,
             recommendations = getRecomendation(scores, selected_month, selected_park)
@@ -156,8 +157,8 @@ function plotParks(svg, scores, projection, filters) {
         d3.select(this).select("circle").attr("r", 15);
 
         tooltip.style("opacity", .85)
-            .style("visibility", "visible");
-
+            .style("visibility", "visible"); 
+        
         tooltip.html(content)
             .style("left", function(){ // position image per window position
                 if(current_position[0] > 700) return (d3.event.pageX-280) + "px";
@@ -236,7 +237,7 @@ function plotResults(matches) {
             return d.rank + ". " + d.name;
         })
         .attr("href", d => d.homepage);
-  
+    
     resultItems
         .append('div')
         .attr('class', 'park-campsite')
@@ -267,31 +268,30 @@ function reshapeParkData(data){
                 campsites: +row.campsites,
                 trails: +row.trails,
                 activity: row.activity,
-                month: colname,
-                visits: +row[colname]
-            });
+                month: colname, 
+                visits: +row[colname]});
         });
     });
 
     return newData;
 }
 
-function parseSimilarity(row) {
-    return [row.park1,
-    row.park2,
-    +row['activity similariy'],
-    +row['crowdedness similarity Jan'],
-    +row['crowdedness similarity Feb'],
-    +row['crowdedness similarity Mar'],
-    +row['crowdedness similarity Apr'],
-    +row['crowdedness similarity May'],
-    +row['crowdedness similarity Jun'],
-    +row['crowdedness similarity Jul'],
-    +row['crowdedness similarity Aug'],
-    +row['crowdedness similarity Sep'],
-    +row['crowdedness similarity Oct'],
-    +row['crowdedness similarity Nov'],
-    +row['crowdedness similarity Dec']];
+function parseSimilarity(row){
+    return [row.park1, 
+        row.park2, 
+        +row['activity similariy'], 
+        +row['crowdedness similarity Jan'], 
+        +row['crowdedness similarity Feb'],
+        +row['crowdedness similarity Mar'],
+        +row['crowdedness similarity Apr'],
+        +row['crowdedness similarity May'],
+        +row['crowdedness similarity Jun'],
+        +row['crowdedness similarity Jul'],
+        +row['crowdedness similarity Aug'],
+        +row['crowdedness similarity Sep'],
+        +row['crowdedness similarity Oct'],
+        +row['crowdedness similarity Nov'],
+        +row['crowdedness similarity Dec']];
 }
 
 function getMonthlyVisit(selected_month) {
@@ -325,7 +325,7 @@ function getMonthlyVisit(selected_month) {
     }
 }
 
-function getRecomendation(scores, selected_month, selected_park, threshold = 0.25, max_recommendations = 5) {
+function getRecomendation(scores, selected_month, selected_park, threshold=0.25, max_recommendations=5){
     /* Get recomendation for selected_month and/or selected_park
     Inputs: 
         scores: park similarity scores saved in 'result_similarity.csv'.
@@ -337,28 +337,28 @@ function getRecomendation(scores, selected_month, selected_park, threshold = 0.2
         max_recommendations: the maximum number of parks recommended.
     Outputs:
         recomanded_parks: a list of park names recommended*/
-
-    var center = [1, 1]
+    
+    var center = [1,1]
     var recomanded_parks = []
     var dist_dict = []
     var activity_score, crowdness_score, distance, park
 
-    for (let i = 0; i < scores.length; i++) {
-
-        if (selected_park == scores[i][0] && selected_park != scores[i][1]) {
+    for (let i = 0; i < scores.length; i++){
+        
+        if (selected_park == scores[i][0] && selected_park != scores[i][1]){
             park = scores[i][1]
             if(park === 'Virgin Islands NP' || park === 'National Park of American Samoa') continue; // exclude parks that are not in the continental United States
             activity_score = scores[i][2];
-            crowdness_score = scores[i][selected_month + 2];
-            distance = Math.sqrt(Math.pow(activity_score - center[0], 2) + Math.pow(crowdness_score - center[1], 2));
+            crowdness_score = scores[i][selected_month+2];
+            distance = Math.sqrt(Math.pow(activity_score-center[0], 2) + Math.pow(crowdness_score-center[1], 2));
             dist_dict.push([park, distance])
         }
     }
 
-    dist_dict = dist_dict.sort(function (a, b) { return a[1] - b[1]; });
-
+    dist_dict = dist_dict.sort(function(a,b) {return a[1] - b[1];});
+    
     if (recomanded_parks.length < max_recommendations) recomanded_parks = dist_dict.slice(0, max_recommendations).map(d => d[0]);
-    else recomanded_parks = dist_dict.filter(d => d[1] < threshold).map(d => d[0]).slice(0, max_recommendations);
+    else recomanded_parks = dist_dict.filter(d => d[1]<threshold).map(d => d[0]).slice(0, max_recommendations);
 
     return recomanded_parks;
 }

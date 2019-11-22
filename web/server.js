@@ -8,9 +8,7 @@ const fsPromises = fs.promises;
 const port = process.env.PORT || 8080; 
 
 // File path to the database files (csv, tsv)
-const dataFilesPath = path.join(__dirname, '../Database');
-
-// Sqlite API Doc https://github.com/mapbox/node-sqlite3/wiki/API
+const dataFilesPath = path.join(__dirname, '../data');
 
 (async () => {
     const app = express();

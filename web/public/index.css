@@ -11,38 +11,22 @@
 
 .facets-container {
     width: 100%;
+    margin: 0 10px;
     display: flex;
     justify-content: center; 
 }
 
 .facet-item {
     display: flex;
+    flex-direction: row;
+    margin-top: 5px;
     width: 15%;
     justify-content: space-between;
+    align-items: center;
 }
 
 .usa-container {
-    display: flex;
     width: 100%;
-}
-
-.tips-container {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-    width: 100%;
-}
-
-.results-container {
-    display: flex;
-    width: 100%;
-    margin-right: 5px;
-}
-
-.result-container {
-    display: flex;
-    flex-direction: row;
-    /* width: 23%; */
 }
 
 .shadow {
@@ -114,7 +98,6 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    width: 600px;
 }
 
 .state {
