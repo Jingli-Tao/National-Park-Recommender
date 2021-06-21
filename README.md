@@ -28,9 +28,14 @@ No. of Parks | Rows | Columns | No. of Features | Period | Data Type
 
 ### Approach
 This project took a different approach from the current practice, illustrated as below. The difference is mainly around "what to match".
+![image info](https://drive.google.com/uc?export=view&id=1F_qjfEU5C197_12fub35-n8y5bOIAG0R)
 
+The backend of NPR leveraged feature engineering and supervised learning.
+<p align="center">
+ <img src="https://drive.google.com/uc?export=view&id=17FceAzSfTqcGoX4X8UF7rbdT1IgguwYR" width="600" height="350">
+</p>
 
-# Project Repo Walkthrough
+## Repo Contents
 The project repo contains:
   * ```data```: data used for project development;
   * ```data_processing```: python scripts for data collection and combination;
@@ -38,10 +43,10 @@ The project repo contains:
   * ```web```: javascripts for server setup and web interface as well as html/css files for web interface.
   * ```package.json``` and ```package-lock.json```: files for defining nodejs dependencies.
 
-# Running Project
+## Running Project
 We hosted our system online so you can play with it: https://national-park-recommender.herokuapp.com/
 
-If you want to run the system on your local machine, please follow the instructions as below.
+If you want to run the system on your local machine, please follow below instructions.
 
 ### Running ```data_processing```
 ```bash
