@@ -1,5 +1,34 @@
-# Project Introduction
-This project built a travel recommender system for U.S. national parks with a different approach from the current practice. It tries to address the issues of complicated user query, intensive user input, and inaccurate suggestion for new user imposed in the current practice. 
+# National Park Recommender
+
+## Project Introduction
+National Park Recommender (NPR) is a travel recommender system that provides recommendations on U.S. national parks based on travel month and park attributes derived from aggregated data. Its backend combined random forest and cosine similarity while its UI employed visualization and user interaction to simplify search and create ease of finding alternative.
+
+### Methods Used
+* Feature Engeneering
+* Supervised Learning
+* Data Visualization
+
+### Technologies
+* Python
+* D3
+* Pandas
+* HTML
+* JavaScript
+* sciki-learn
+* numpy
+* BeautifulSoup
+
+## Project Description
+
+### Data
+NPR is built on an aggregated dataset that is collected by scripting, downloading, and web scraping.
+No. of Parks | Rows | Columns | No. of Features | Period | Data Type 
+:-: | :-: | :-: | :-: | :-: | :-:
+61 | 115897 | 17 | 9 | Jan. 2008 to Dec. 2018 | catogorial, temporal
+
+### Approach
+This project took a different approach from the current practice, illustrated as below. The difference is mainly around "what to match".
+
 
 # Project Repo Walkthrough
 The project repo contains:
